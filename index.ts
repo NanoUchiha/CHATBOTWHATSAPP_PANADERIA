@@ -1,43 +1,23 @@
-import OpenAI from "openai";
-import { ChatCompletionMessageParam } from "openai/resources";
+import BotWhatsapp from '@bot-whatsapp/bot'
+import database from './database';
+import provider from './provider';
+import flow from './flow';
 import "dotenv/config"
-import { generatePrompt } from "./prompt";
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
 
 /**
- * 
- * @param name 
- * @param history 
+ * Funcion encargada de iniciar el Bot
  */
-const run = async (name:string, history:ChatCompletionMessageParam[]): Promise<string> => {
+const main = async () => {
+    
+   await BotWhatsapp.createBot({
+        database,
+        provider,
+        flow
+    })
 
-    const prompt = generatePrompt(name)
-    console.log(`[PROMPT]:`,prompt)
-
-    const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo",
-        messages: [
-            {
-                "role": "assistant",
-                "content": prompt
-            },
-            ...history
-        ],
-        temperature: 1,
-        max_tokens: 800,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-    });
-    return response.choices[0].message.content
 }
 
-export {run}
 
 
 
-
-
+main()
